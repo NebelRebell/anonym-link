@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Anonyme Links</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            text-align: center;
+            padding-top: 100px;
+        }
+        h1, h2 {
+            color: white;
+        }
+        input[type="text"] {
+            width: 300px;
+            padding: 5px;
+            font-size: 16px;
+        }
+        button {
+            padding: 8px 20px;
+            font-size: 16px;
+            background-color: #337ab7;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        p {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Anonyme Links</h1>
+
+    <form>
+        <label for="originalUrl">Ursprüngliche URL:</label>
+        <input type="text" id="originalUrl" placeholder="Gib die ursprüngliche URL ein" required>
+        <br><br>
+        <button type="button" onclick="anonymizeUrl()">Anonymisieren</button>
+    </form>
+
+    <h2>Ergebnis:</h2>
+    <p id="anonymousUrl"></p>
+    <p id="htmlLink"></p>
+    <p id="boardLink"></p>
+
+    <script>
+        function anonymizeUrl() {
+            var originalUrl = document.getElementById("originalUrl").value;
+            var anonymizedUrl = "https://anonym.to/?" + encodeURIComponent(originalUrl);
+            var htmlLink = '<a href="' + anonymizedUrl + '">' + originalUrl + '</a>';
+            var boardLink = '[url=' + anonymizedUrl + ']' + originalUrl + '[/url]';
+
+            document.getElementById("anonymousUrl").innerHTML = "Anonyme URL: " + anonymizedUrl;
+            document.getElementById("htmlLink").innerHTML = "Als HTML-Link: " + htmlLink;
+            document.getElementById("boardLink").innerHTML = "Als Board-Link: " + boardLink;
+
+            navigator.clipboard.writeText(anonymizedUrl).then(function() {
+                alert("Anonyme URL wurde in die Zwischenablage kopiert!");
+            }, function() {
+                console.error("Fehler beim Kopieren der anonymen URL in die Zwischenablage!");
+            });
+        }
+    </script>
+</body>
+</html>
