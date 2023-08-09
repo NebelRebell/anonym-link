@@ -27,7 +27,7 @@ Don’t flame without brain!
 Your Satisfaction is our Achievement!
 
 🕹 Multigaming Community seit 1997
-🔗Links: https://bit.ly/3M5u63T
+🔗Links: [https://bit.ly/3M5u63T](https://linktr.ee/nebelbanknet)
 🔺🔺🔺
 
 #nebelkrieger #multigamingcommunity #nebelbanknet #dontflamewithoutbrain #gamingcommunity #communication #hobbygaming #streamingcommunity #dedicatedservers #sponsoring #giveaways #fairplaygaming #teamplay #since1997 #pclifehacks #freegames #legalgaming
