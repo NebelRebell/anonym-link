@@ -12,7 +12,7 @@ Damit können Benutzer ihre URLs anonymisieren, um ihre Privatsphäre beim Teile
 - **Copy-Buttons**: Jeder generierte Link kann mit einem Klick in die Zwischenablage kopiert werden.  
 - **Responsive Design**: Optimierte Darstellung für Desktop und Mobilgeräte.  
 - **Sicherheit**: Links werden mit `rel="noreferrer noopener"` sowie `meta referrer="no-referrer"` ausgegeben.  
-- **Urheberhinweis**: NebelRebell / nebelbank.net im Footer integriert.  
+- **Urheberhinweis**: NebelRebell / Nebelbank.net im Footer integriert.  
 
 ---
 
@@ -36,11 +36,7 @@ Für umfassenden Schutz vor Überwachung im Netz wird empfohlen, zusätzlich ein
 
 ---
 
-## 📌 Community & Support
-
 📌 **JOIN DISCORD** ➞ https://discord.gg/scg3YqZFU6 👍⭐️👍
-
----
 
 🔻🔻🔻  
 🦉 **NEBELBANK.NET**  
