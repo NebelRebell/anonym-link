@@ -1,68 +1,173 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-    <title>Anonyme Links</title>
-    <style>
-        body {
-            background-color: black;
-            color: white;
-            text-align: center;
-            padding-top: 100px;
-        }
-        h1, h2 {
-            color: white;
-        }
-        input[type="text"] {
-            width: 300px;
-            padding: 5px;
-            font-size: 16px;
-        }
-        button {
-            padding: 8px 20px;
-            font-size: 16px;
-            background-color: #337ab7;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        p {
-            font-size: 16px;
-            margin: 10px 0;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>NebelRebell - Anonyme Links</title>
+<style>
+  :root {
+    --bg:#0b0b0b;
+    --card:#121212;
+    --muted:#bdbdbd;
+    --accent:#2f7fb2;
+    --accent-hover:#246289;
+    --success:#46a049;
+  }
+  body {
+    margin:0;
+    background:var(--bg);
+    color:#f3f3f3;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    padding:40px 20px;
+    text-align:center;
+  }
+  h1 {
+    margin:0 0 10px;
+    font-size:26px;
+    font-weight:600;
+  }
+  p.lead {
+    margin:0 0 20px;
+    color:var(--muted);
+    font-size:14px;
+  }
+  form {
+    margin-bottom:20px;
+  }
+  input[type="text"] {
+    width:80%;
+    max-width:400px;
+    padding:10px;
+    font-size:15px;
+    border:none;
+    border-radius:6px;
+    margin-bottom:10px;
+  }
+  button {
+    margin:4px;
+    padding:9px 15px;
+    font-size:14px;
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+  }
+  button:hover {background:var(--accent-hover)}
+  .output {
+    margin-top:20px;
+    max-width:700px;
+    margin-left:auto;
+    margin-right:auto;
+    text-align:left;
+  }
+  .row {
+    background:var(--card);
+    padding:10px;
+    margin-bottom:8px;
+    border-radius:6px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+  }
+  .linkText {
+    flex:1;
+    font-family:monospace;
+    font-size:13px;
+    white-space:nowrap;
+    overflow:auto;
+  }
+  .status {
+    margin-top:10px;
+    color:var(--success);
+    font-size:13px;
+    display:none;
+  }
+  footer {
+    margin-top:25px;
+    font-size:12px;
+    color:var(--muted);
+  }
+</style>
 </head>
 <body>
-    <h1>Anonyme Links</h1>
+  <h1>NebelRebell - Anonyme Links</h1>
+  <p class="lead">Nebelbank.net - The Power of Perfection. Dieses Tool anonymisiert Referrer und schützt deine Privatsphäre beim Teilen von Links.</p>
 
-    <form>
-        <label for="originalUrl">Ursprüngliche URL:</label>
-        <input type="text" id="originalUrl" placeholder="Gib die ursprüngliche URL ein" required>
-        <br><br>
-        <button type="button" onclick="anonymizeUrl()">Anonymisieren</button>
-    </form>
+  <form onsubmit="anonymizeUrl();return false;">
+    <input type="text" id="originalUrl" placeholder="https://example.com" required>
+    <br>
+    <button type="submit">Anonymisieren</button>
+    <button type="reset" onclick="clearOutput()">Zurücksetzen</button>
+  </form>
 
-    <h2>Ergebnis:</h2>
-    <p id="anonymousUrl"></p>
-    <p id="htmlLink"></p>
-    <p id="boardLink"></p>
+  <div class="output" id="output" style="display:none;">
+    <div class="row">
+      <span class="linkText" id="anonymousUrl"></span>
+      <button onclick="copyText('anonymousUrl')">Kopieren</button>
+    </div>
+    <div class="row">
+      <span class="linkText" id="clickableLink"></span>
+      <button onclick="copyText('clickableLink')">Kopieren</button>
+    </div>
+    <div class="row">
+      <span class="linkText" id="htmlLink"></span>
+      <button onclick="copyText('htmlLink')">Kopieren</button>
+    </div>
+    <div class="row">
+      <span class="linkText" id="boardLink"></span>
+      <button onclick="copyText('boardLink')">Kopieren</button>
+    </div>
+    <div class="row">
+      <span class="linkText" id="mdLink"></span>
+      <button onclick="copyText('mdLink')">Kopieren</button>
+    </div>
+    <p class="status" id="statusMsg">Kopiert!</p>
+  </div>
 
-    <script>
-        function anonymizeUrl() {
-            var originalUrl = document.getElementById("originalUrl").value;
-            var anonymizedUrl = "https://anonym.to/?" + encodeURIComponent(originalUrl);
-            var htmlLink = '<a href="' + anonymizedUrl + '">' + originalUrl + '</a>';
-            var boardLink = '[url=' + anonymizedUrl + ']' + originalUrl + '[/url]';
+  <footer>
+    NebelRebell / nebelbank.net © 2025 - Keine Garantie für vollständige Anonymität. Für umfassenden Schutz nutze zusätzlich VPN oder eigene Proxy-Lösungen.
+  </footer>
 
-            document.getElementById("anonymousUrl").innerHTML = "Anonyme URL: " + anonymizedUrl;
-            document.getElementById("htmlLink").innerHTML = "Als HTML-Link: " + htmlLink;
-            document.getElementById("boardLink").innerHTML = "Als Board-Link: " + boardLink;
+<script>
+function anonymizeUrl() {
+  const input = document.getElementById("originalUrl").value.trim();
+  let url;
+  try {
+    url = new URL(input.startsWith("http") ? input : "https://" + input);
+  } catch(e) {
+    alert("Bitte eine gültige URL eingeben (z.B. https://example.com)");
+    return;
+  }
 
-            navigator.clipboard.writeText(anonymizedUrl).then(function() {
-                alert("Anonyme URL wurde in die Zwischenablage kopiert!");
-            }, function() {
-                console.error("Fehler beim Kopieren der anonymen URL in die Zwischenablage!");
-            });
-        }
-    </script>
+  const target = url.toString();
+  const anonymized = "https://anonym.to/?" + encodeURIComponent(target);
+
+  document.getElementById("anonymousUrl").textContent = anonymized;
+  document.getElementById("clickableLink").textContent = target + " (klickbar: " + anonymized + ")";
+  document.getElementById("htmlLink").textContent = '<a href="' + anonymized + '" target="_blank" rel="noreferrer noopener">' + target + '</a>';
+  document.getElementById("boardLink").textContent = '[url=' + anonymized + ']' + target + '[/url]';
+  document.getElementById("mdLink").textContent = '[' + target + '](' + anonymized + ')';
+
+  document.getElementById("output").style.display = "block";
+}
+
+function copyText(id) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const msg = document.getElementById("statusMsg");
+    msg.style.display = "block";
+    setTimeout(() => msg.style.display = "none", 1200);
+  }).catch(() => {
+    alert("Kopieren fehlgeschlagen");
+  });
+}
+
+function clearOutput() {
+  document.getElementById("output").style.display = "none";
+}
+</script>
 </body>
 </html>
