@@ -1,0 +1,32 @@
+# --- Betriebssystem ---------------------------------------------------------
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# --- Editoren / IDEs --------------------------------------------------------
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+
+# --- Web / Werkzeuge --------------------------------------------------------
+node_modules/
+package-lock.json
+yarn.lock
+.cache/
+dist/
+*.log
+
+# --- Lokales ----------------------------------------------------------------
+*.local
+.env
+.env.*
+!.env.example
