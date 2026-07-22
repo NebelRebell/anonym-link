@@ -4,170 +4,646 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="referrer" content="no-referrer">
-<title>NebelRebell - Anonyme Links</title>
+<meta name="color-scheme" content="dark light">
+<meta name="description" content="Anonyme Links erzeugen: entfernt Tracking-Parameter und verbirgt den Referrer. Läuft vollständig offline im Browser.">
+<meta name="theme-color" content="#0ea5e9">
+<title>Anonyme Links · NebelRebell</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔗</text></svg>">
 <style>
   :root {
-    --bg:#0b0b0b;
-    --card:#121212;
-    --muted:#bdbdbd;
-    --accent:#2f7fb2;
-    --accent-hover:#246289;
-    --success:#46a049;
+    --bg: #0b0f14;
+    --surface: #121a23;
+    --surface-2: #18222e;
+    --border: #22303f;
+    --text: #e6edf3;
+    --muted: #8b9cb0;
+    --accent: #0ea5e9;
+    --accent-hover: #38bdf8;
+    --accent-ink: #001018;
+    --success: #22c55e;
+    --danger: #f87171;
+    --radius: 10px;
   }
+
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f6f8fa;
+      --surface: #ffffff;
+      --surface-2: #f0f4f8;
+      --border: #d6dee7;
+      --text: #14212e;
+      --muted: #5a6b7d;
+      --accent: #0369a1;
+      --accent-hover: #075985;
+      --accent-ink: #ffffff;
+      --success: #15803d;
+      --danger: #b91c1c;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
   body {
-    margin:0;
-    background:var(--bg);
-    color:#f3f3f3;
-    font-family: "Segoe UI", Roboto, Arial, sans-serif;
-    padding:40px 20px;
-    text-align:center;
+    margin: 0;
+    padding: 40px 20px 60px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", Roboto, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+    line-height: 1.55;
   }
+
+  .wrap { max-width: 760px; margin: 0 auto; }
+
+  header { text-align: center; margin-bottom: 32px; }
+
   h1 {
-    margin:0 0 10px;
-    font-size:26px;
-    font-weight:600;
+    margin: 0 0 8px;
+    font-size: clamp(22px, 4vw, 30px);
+    font-weight: 650;
+    letter-spacing: -0.02em;
   }
-  p.lead {
-    margin:0 0 20px;
-    color:var(--muted);
-    font-size:14px;
+
+  h1 .dot { color: var(--accent); }
+
+  .lead {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    max-width: 52ch;
+    margin-inline: auto;
   }
-  form {
-    margin-bottom:20px;
+
+  /* ---------- Eingabekarte ---------- */
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
   }
-  input[type="text"] {
-    width:80%;
-    max-width:400px;
-    padding:10px;
-    font-size:15px;
-    border:none;
-    border-radius:6px;
-    margin-bottom:10px;
+
+  label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+
+  .hint { font-weight: 400; color: var(--muted); }
+
+  input[type="url"], select {
+    width: 100%;
+    padding: 11px 12px;
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: border-color .15s, box-shadow .15s;
   }
+
+  input[type="url"]:focus-visible,
+  select:focus-visible,
+  button:focus-visible,
+  a:focus-visible {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
+  }
+
+  input[type="url"]::placeholder { color: var(--muted); }
+
+  input[type="url"][aria-invalid="true"] { border-color: var(--danger); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
+
+  .options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .options label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    font-weight: 400;
+    cursor: pointer;
+  }
+
+  input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; }
+
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
   button {
-    margin:4px;
-    padding:9px 15px;
-    font-size:14px;
-    background:var(--accent);
-    color:#fff;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 18px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .15s, border-color .15s, color .15s;
   }
-  button:hover {background:var(--accent-hover)}
-  .output {
-    margin-top:20px;
-    max-width:700px;
-    margin-left:auto;
-    margin-right:auto;
-    text-align:left;
+
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-primary:hover { background: var(--accent-hover); }
+
+  .btn-ghost { background: transparent; color: var(--muted); border-color: var(--border); }
+  .btn-ghost:hover { color: var(--text); border-color: var(--muted); }
+
+  .error {
+    margin: 12px 0 0;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: var(--danger);
+    background: color-mix(in srgb, var(--danger) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent);
+    border-radius: 8px;
   }
+
+  /* ---------- Ausgabe ---------- */
+
+  .results { margin-top: 26px; }
+
+  .stripped {
+    margin: 0 0 16px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: var(--text);
+    background: color-mix(in srgb, var(--success) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--success) 35%, transparent);
+    border-radius: 8px;
+  }
+
+  .stripped code {
+    color: var(--success);
+    font-size: 12px;
+    word-break: break-all;
+  }
+
+  .open-row { margin-bottom: 18px; }
+
+  .open-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent-ink);
+    background: var(--accent);
+    border-radius: 8px;
+    text-decoration: none;
+    word-break: break-all;
+  }
+
+  .open-link:hover { background: var(--accent-hover); }
+
   .row {
-    background:var(--card);
-    padding:10px;
-    margin-bottom:8px;
-    border-radius:6px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    margin-bottom: 10px;
   }
-  .linkText {
-    flex:1;
-    font-family:monospace;
-    font-size:13px;
-    white-space:nowrap;
-    overflow:auto;
+
+  .row-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 7px;
   }
-  .status {
-    margin-top:10px;
-    color:var(--success);
-    font-size:13px;
-    display:none;
+
+  .row-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--muted);
   }
+
+  .copy-btn {
+    padding: 5px 12px;
+    font-size: 12px;
+    background: var(--surface-2);
+    color: var(--muted);
+    border-color: var(--border);
+    flex-shrink: 0;
+  }
+
+  .copy-btn:hover { color: var(--text); border-color: var(--muted); }
+  .copy-btn.ok { color: var(--success); border-color: var(--success); }
+  .copy-btn.fail { color: var(--danger); border-color: var(--danger); }
+
+  .code {
+    margin: 0;
+    font-family: ui-monospace, SFMono-Regular, "Cascadia Mono", Consolas, monospace;
+    font-size: 12.5px;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  /* ---------- Fuss ---------- */
+
   footer {
-    margin-top:25px;
-    font-size:12px;
-    color:var(--muted);
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
   }
+
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  .disclaimer { max-width: 60ch; margin: 8px auto 0; }
+
+  .sr-only {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+
+  [hidden] { display: none !important; }
 </style>
 </head>
 <body>
-  <h1>NebelRebell - Anonyme Links</h1>
-  <p class="lead">Nebelbank.net - The Power of Perfection. Dieses Tool anonymisiert Referrer und schützt deine Privatsphäre beim Teilen von Links.</p>
+<div class="wrap">
 
-  <form onsubmit="anonymizeUrl();return false;">
-    <input type="text" id="originalUrl" placeholder="https://example.com" required>
-    <br>
-    <button type="submit">Anonymisieren</button>
-    <button type="reset" onclick="clearOutput()">Zurücksetzen</button>
+  <header>
+    <h1>Anonyme Links<span class="dot">.</span></h1>
+    <p class="lead">
+      Entfernt Tracking-Parameter aus einer URL und leitet sie über einen
+      Referrer-Filter um. Alles passiert lokal im Browser — es wird nichts
+      hochgeladen oder gespeichert.
+    </p>
+  </header>
+
+  <form class="card" id="form" novalidate>
+    <div class="grid">
+      <div>
+        <label for="originalUrl">Original-URL</label>
+        <input
+          type="url" id="originalUrl" name="originalUrl"
+          placeholder="https://example.com/seite?utm_source=newsletter"
+          inputmode="url" autocomplete="off" spellcheck="false" autofocus
+          aria-describedby="errorMsg">
+      </div>
+      <div>
+        <label for="service">Dienst</label>
+        <select id="service" name="service">
+          <option value="anonym.to">anonym.to</option>
+          <option value="href.li">href.li</option>
+          <option value="degoogle">nur Parameter säubern</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="options">
+      <label>
+        <input type="checkbox" id="optStrip" checked>
+        Tracking-Parameter entfernen
+      </label>
+      <label>
+        <input type="checkbox" id="optFragment" checked>
+        Anker (<code>#...</code>) beibehalten
+      </label>
+    </div>
+
+    <div class="actions">
+      <button type="submit" class="btn-primary">Anonymisieren</button>
+      <button type="button" class="btn-ghost" id="resetBtn">Zurücksetzen</button>
+    </div>
+
+    <p class="error" id="errorMsg" role="alert" hidden></p>
   </form>
 
-  <div class="output" id="output" style="display:none;">
-    <div class="row">
-      <span class="linkText" id="anonymousUrl"></span>
-      <button onclick="copyText('anonymousUrl')">Kopieren</button>
+  <section class="results" id="results" hidden aria-label="Ergebnis">
+    <p class="stripped" id="strippedMsg" hidden></p>
+
+    <div class="open-row">
+      <a class="open-link" id="openLink" href="#" target="_blank" rel="noreferrer noopener external">
+        Anonymisiert öffnen ↗
+      </a>
     </div>
+
     <div class="row">
-      <span class="linkText" id="clickableLink"></span>
-      <button onclick="copyText('clickableLink')">Kopieren</button>
+      <div class="row-head">
+        <span class="row-label" id="lbl-plain">Direktlink</span>
+        <button type="button" class="copy-btn" data-copy="out-plain" aria-describedby="lbl-plain">Kopieren</button>
+      </div>
+      <p class="code" id="out-plain"></p>
     </div>
+
     <div class="row">
-      <span class="linkText" id="htmlLink"></span>
-      <button onclick="copyText('htmlLink')">Kopieren</button>
+      <div class="row-head">
+        <span class="row-label" id="lbl-html">HTML</span>
+        <button type="button" class="copy-btn" data-copy="out-html" aria-describedby="lbl-html">Kopieren</button>
+      </div>
+      <p class="code" id="out-html"></p>
     </div>
+
     <div class="row">
-      <span class="linkText" id="boardLink"></span>
-      <button onclick="copyText('boardLink')">Kopieren</button>
+      <div class="row-head">
+        <span class="row-label" id="lbl-bb">BBCode</span>
+        <button type="button" class="copy-btn" data-copy="out-bb" aria-describedby="lbl-bb">Kopieren</button>
+      </div>
+      <p class="code" id="out-bb"></p>
     </div>
+
     <div class="row">
-      <span class="linkText" id="mdLink"></span>
-      <button onclick="copyText('mdLink')">Kopieren</button>
+      <div class="row-head">
+        <span class="row-label" id="lbl-md">Markdown</span>
+        <button type="button" class="copy-btn" data-copy="out-md" aria-describedby="lbl-md">Kopieren</button>
+      </div>
+      <p class="code" id="out-md"></p>
     </div>
-    <p class="status" id="statusMsg">Kopiert!</p>
-  </div>
+
+    <p class="sr-only" id="liveRegion" role="status" aria-live="polite"></p>
+  </section>
+
+  <noscript>
+    <p class="error">Dieses Werkzeug benötigt JavaScript. Es läuft ausschließlich lokal im Browser.</p>
+  </noscript>
 
   <footer>
-    NebelRebell / nebelbank.net © 2025 - Keine Garantie für vollständige Anonymität. Für umfassenden Schutz nutze zusätzlich VPN oder eigene Proxy-Lösungen.
+    <p>
+      <strong>NebelRebell</strong> ·
+      <a href="https://nebelbank.net" rel="noreferrer noopener">nebelbank.net</a> ·
+      <span id="year"></span>
+    </p>
+    <p class="disclaimer">
+      Anonymisiert den Referrer und entfernt Tracking-Parameter. Das ersetzt
+      kein VPN und verbirgt weder deine IP-Adresse noch schützt es vor
+      Fingerprinting. Für umfassenden Schutz zusätzlich VPN oder eigenen Proxy nutzen.
+    </p>
   </footer>
 
+</div>
+
 <script>
-function anonymizeUrl() {
-  const input = document.getElementById("originalUrl").value.trim();
-  let url;
-  try {
-    url = new URL(input.startsWith("http") ? input : "https://" + input);
-  } catch(e) {
-    alert("Bitte eine gültige URL eingeben (z.B. https://example.com)");
-    return;
+(function () {
+  "use strict";
+
+  /* ----------------------------------------------------------------------
+   * Konfiguration
+   * -------------------------------------------------------------------- */
+
+  // Nur diese Schemata sind zulaessig. Verhindert javascript:, data:, file: usw.
+  var ALLOWED_PROTOCOLS = ["http:", "https:"];
+
+  // Umleitungsdienste. anonym.to erwartet die Ziel-URL kodiert,
+  // href.li erwartet sie unkodiert direkt hinter dem Fragezeichen.
+  var SERVICES = {
+    "anonym.to": function (url) { return "https://anonym.to/?" + encodeURIComponent(url); },
+    "href.li":   function (url) { return "https://href.li/?" + url; },
+    "degoogle":  function (url) { return url; }
+  };
+
+  // Bekannte Tracking-Parameter. Exakte Namen.
+  var TRACKING_EXACT = [
+    "fbclid", "gclid", "gclsrc", "dclid", "wbraid", "gbraid",
+    "msclkid", "twclid", "ttclid", "igshid", "igsh", "yclid",
+    "mc_cid", "mc_eid", "_openstat", "vero_id", "vero_conv",
+    "wickedid", "oly_enc_id", "oly_anon_id", "rb_clickid",
+    "_hsenc", "_hsmi", "__hssc", "__hstc", "__hsfp", "hsCtaTracking",
+    "ref_src", "ref_url", "trk", "trkCampaign", "si", "spm", "scm",
+    "sc_channel", "sc_campaign", "icid", "ICID", "cmpid", "mkt_tok",
+    "s_kwcid", "epik", "irclickid", "at_medium", "at_campaign"
+  ];
+
+  // Tracking-Praefixe. Alles was so beginnt, fliegt raus.
+  var TRACKING_PREFIX = ["utm_", "pk_", "mtm_", "hsa_", "piwik_", "matomo_"];
+
+  /* ----------------------------------------------------------------------
+   * DOM
+   * -------------------------------------------------------------------- */
+
+  var form       = document.getElementById("form");
+  var input      = document.getElementById("originalUrl");
+  var service    = document.getElementById("service");
+  var optStrip   = document.getElementById("optStrip");
+  var optFragment= document.getElementById("optFragment");
+  var resetBtn   = document.getElementById("resetBtn");
+  var errorMsg   = document.getElementById("errorMsg");
+  var results    = document.getElementById("results");
+  var strippedMsg= document.getElementById("strippedMsg");
+  var openLink   = document.getElementById("openLink");
+  var liveRegion = document.getElementById("liveRegion");
+
+  var OUT = {
+    plain: document.getElementById("out-plain"),
+    html:  document.getElementById("out-html"),
+    bb:    document.getElementById("out-bb"),
+    md:    document.getElementById("out-md")
+  };
+
+  /* ----------------------------------------------------------------------
+   * Hilfsfunktionen
+   * -------------------------------------------------------------------- */
+
+  function isTrackingParam(name) {
+    var lower = name.toLowerCase();
+    for (var i = 0; i < TRACKING_PREFIX.length; i++) {
+      if (lower.indexOf(TRACKING_PREFIX[i]) === 0) return true;
+    }
+    for (var j = 0; j < TRACKING_EXACT.length; j++) {
+      if (TRACKING_EXACT[j].toLowerCase() === lower) return true;
+    }
+    return false;
   }
 
-  const target = url.toString();
-  const anonymized = "https://anonym.to/?" + encodeURIComponent(target);
+  // Nimmt die Roheingabe und liefert ein URL-Objekt oder wirft einen Fehler
+  // mit einer fuer den Nutzer verstaendlichen Meldung.
+  function parseUrl(raw) {
+    var value = raw.trim();
+    if (!value) throw new Error("Bitte zuerst eine URL eingeben.");
 
-  document.getElementById("anonymousUrl").textContent = anonymized;
-  document.getElementById("clickableLink").textContent = target + " (klickbar: " + anonymized + ")";
-  document.getElementById("htmlLink").textContent = '<a href="' + anonymized + '" target="_blank" rel="noreferrer noopener">' + target + '</a>';
-  document.getElementById("boardLink").textContent = '[url=' + anonymized + ']' + target + '[/url]';
-  document.getElementById("mdLink").textContent = '[' + target + '](' + anonymized + ')';
+    // Nur ein Schema ergaenzen, wenn wirklich keines vorhanden ist.
+    // "foo://" wuerde sonst faelschlich als http erkannt werden.
+    if (!/^[a-z][a-z0-9+.-]*:/i.test(value)) value = "https://" + value;
 
-  document.getElementById("output").style.display = "block";
-}
+    var url;
+    try {
+      url = new URL(value);
+    } catch (e) {
+      throw new Error("Das ist keine gültige URL. Beispiel: https://example.com/seite");
+    }
 
-function copyText(id) {
-  const text = document.getElementById(id).textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    const msg = document.getElementById("statusMsg");
-    msg.style.display = "block";
-    setTimeout(() => msg.style.display = "none", 1200);
-  }).catch(() => {
-    alert("Kopieren fehlgeschlagen");
+    if (ALLOWED_PROTOCOLS.indexOf(url.protocol) === -1) {
+      throw new Error("Nur http:// und https:// werden unterstützt (erkannt: " + url.protocol + ")");
+    }
+    if (!url.hostname || url.hostname.indexOf(".") === -1) {
+      throw new Error("Der Domainname sieht unvollständig aus: " + (url.hostname || "leer"));
+    }
+    return url;
+  }
+
+  // Entfernt Tracking-Parameter und meldet zurueck, welche entfernt wurden.
+  function cleanUrl(url) {
+    var removed = [];
+    if (optStrip.checked) {
+      var names = [];
+      url.searchParams.forEach(function (_, key) { names.push(key); });
+      names.forEach(function (key) {
+        if (isTrackingParam(key)) {
+          url.searchParams.delete(key);
+          if (removed.indexOf(key) === -1) removed.push(key);
+        }
+      });
+    }
+    if (!optFragment.checked) url.hash = "";
+    return { url: url, removed: removed };
+  }
+
+  function showError(message) {
+    errorMsg.textContent = message;
+    errorMsg.hidden = false;
+    input.setAttribute("aria-invalid", "true");
+    results.hidden = true;
+  }
+
+  function clearError() {
+    errorMsg.hidden = true;
+    errorMsg.textContent = "";
+    input.removeAttribute("aria-invalid");
+  }
+
+  /* ----------------------------------------------------------------------
+   * Hauptablauf
+   * -------------------------------------------------------------------- */
+
+  function anonymize() {
+    var parsed;
+    try {
+      parsed = parseUrl(input.value);
+    } catch (e) {
+      showError(e.message);
+      return;
+    }
+    clearError();
+
+    var cleaned = cleanUrl(parsed);
+    var target  = cleaned.url.toString();
+    var build   = SERVICES[service.value] || SERVICES["anonym.to"];
+    var link    = build(target);
+
+    OUT.plain.textContent = link;
+    OUT.html.textContent  = '<a href="' + link + '" target="_blank" rel="noreferrer noopener">' + target + "</a>";
+    OUT.bb.textContent    = "[url=" + link + "]" + target + "[/url]";
+    OUT.md.textContent    = "[" + target + "](" + link + ")";
+
+    openLink.href = link;
+
+    if (cleaned.removed.length) {
+      strippedMsg.innerHTML = "";
+      strippedMsg.appendChild(document.createTextNode(
+        cleaned.removed.length + " Tracking-Parameter entfernt: "
+      ));
+      var code = document.createElement("code");
+      code.textContent = cleaned.removed.join(", ");
+      strippedMsg.appendChild(code);
+      strippedMsg.hidden = false;
+    } else {
+      strippedMsg.hidden = true;
+    }
+
+    results.hidden = false;
+    liveRegion.textContent = "Anonymisierter Link erzeugt.";
+  }
+
+  /* ----------------------------------------------------------------------
+   * Kopieren - mit Rueckfallebene fuer file:// und aeltere Browser
+   * -------------------------------------------------------------------- */
+
+  function legacyCopy(text) {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.top = "-1000px";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    ta.setSelectionRange(0, ta.value.length);
+    var ok = false;
+    try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+    document.body.removeChild(ta);
+    return ok;
+  }
+
+  // navigator.clipboard existiert nur in sicheren Kontexten. Beim Oeffnen
+  // per file:// ist es in vielen Browsern undefined - deshalb vor dem
+  // Zugriff pruefen statt blind .then() aufzurufen.
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).catch(function () {
+        return legacyCopy(text) ? undefined : Promise.reject();
+      });
+    }
+    return legacyCopy(text) ? Promise.resolve() : Promise.reject();
+  }
+
+  function flash(btn, ok) {
+    var original = "Kopieren";
+    btn.textContent = ok ? "Kopiert ✓" : "Fehlgeschlagen";
+    btn.classList.add(ok ? "ok" : "fail");
+    liveRegion.textContent = ok ? "In die Zwischenablage kopiert." : "Kopieren fehlgeschlagen.";
+    window.setTimeout(function () {
+      btn.textContent = original;
+      btn.classList.remove("ok", "fail");
+    }, 1600);
+  }
+
+  /* ----------------------------------------------------------------------
+   * Ereignisse
+   * -------------------------------------------------------------------- */
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    anonymize();
   });
-}
 
-function clearOutput() {
-  document.getElementById("output").style.display = "none";
-}
+  resetBtn.addEventListener("click", function () {
+    form.reset();
+    clearError();
+    results.hidden = true;
+    strippedMsg.hidden = true;
+    input.focus();
+  });
+
+  // Neu berechnen, sobald eine Option geaendert wird - aber nur, wenn
+  // bereits ein Ergebnis sichtbar ist.
+  [service, optStrip, optFragment].forEach(function (el) {
+    el.addEventListener("change", function () {
+      if (!results.hidden) anonymize();
+    });
+  });
+
+  document.addEventListener("click", function (event) {
+    var btn = event.target.closest ? event.target.closest("[data-copy]") : null;
+    if (!btn) return;
+    var node = document.getElementById(btn.getAttribute("data-copy"));
+    if (!node) return;
+    copyText(node.textContent).then(
+      function () { flash(btn, true); },
+      function () { flash(btn, false); }
+    );
+  });
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+})();
 </script>
 </body>
 </html>
